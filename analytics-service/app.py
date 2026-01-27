@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client.get_default_database()
+db = client["test"]
 tasks_collection = db["tasks"]
 
 
