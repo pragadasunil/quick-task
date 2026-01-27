@@ -1,0 +1,15 @@
+
+@import "tailwindcss";
+
+/* Global base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f8fafc; /* slate-50 */
+  color: #0f172a;            /* slate-900 */
+}
+
+
+
