@@ -2,10 +2,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from bson.objectid import ObjectId
 import os
 from collections import defaultdict
-from datetime import datetime
-
 
 load_dotenv()
 
@@ -13,13 +12,14 @@ app = Flask(__name__)
 CORS(app)
 
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["test"]
+db = client.get_default_database()
 tasks_collection = db["tasks"]
 
 
 @app.route("/")
 def home():
-    return jsonify({"message": "Flask running"})
+    return jsonify({"message": "Analytics service running"})
+
 
 @app.route("/analytics/user-stats")
 def user_stats():
@@ -28,11 +28,8 @@ def user_stats():
         return jsonify({"error": "userId required"}), 400
 
     user_object_id = ObjectId(user_id)
-    
-    print(tasks_collection)
-    tasks = list(tasks_collection.find({"userId": user_object_id}))
 
-    
+    tasks = list(tasks_collection.find({"userId": user_object_id}))
 
     total = len(tasks)
     completed = len([t for t in tasks if t.get("status") == "Completed"])
@@ -52,6 +49,7 @@ def user_stats():
         "completionRate": completion_rate,
         "priorityBreakdown": priority_breakdown
     })
+
 
 @app.route("/analytics/productivity")
 def productivity():
@@ -77,6 +75,5 @@ def productivity():
     return jsonify(dict(trend))
 
 
-
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
